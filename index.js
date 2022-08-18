@@ -1,3 +1,4 @@
+require('./.pnp.cjs').setup(); // enable for yarn pnp
 const config = require('./config');
 const TelegramBot = require('node-telegram-bot-api');
 const { createLogger, format, transports } = require('winston');
