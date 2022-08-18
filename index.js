@@ -38,9 +38,10 @@ const stickers = [
 
 const bot = new TelegramBot(token, { polling: true });
 
+let data;
 if (fs.existsSync('./data.json')) {
-    var fdata = fs.readFileSync('./data.json', 'utf8');
-    var data = JSON.parse(fdata);
+    const fdata = fs.readFileSync('./data.json', 'utf8');
+    data = JSON.parse(fdata);
     // logger.info('Old data: ' + JSON.stringify(data));
 }
 
@@ -55,7 +56,7 @@ function saveData() {
 
 if (typeof data == 'undefined' || data == null) {
     logger.info('No data.json');
-    var data = {
+    data = {
         chatids: [],
         tzmap: {},
         lastid: {},
@@ -169,10 +170,10 @@ bot.onText(/^\/sleeptime(@sticker_time_bot)?(\s+([^\s]+))?$/, (msg, match) => {
     const chatId = msg.chat.id;
     // bot.sendMessage(chatId, match[0]+'  '+match[1]+'  '+match[2]+'  '+match[3])
     if (match[3]) {
-        var num = parseInt(match[3], 10);
+        const num = parseInt(match[3], 10);
         if (num <= 23 && num >= 0){
             data.sleeptime[chatId] = num;
-            var message = 'Set sleep time to ' + num + ':00';
+            let message = 'Set sleep time to ' + num + ':00';
             if (chatId in data.timelist) {
                 delete data.timelist[chatId];
                 message += ", list of hours has been deleted.";
@@ -195,10 +196,10 @@ bot.onText(/^\/sleeptime(@sticker_time_bot)?(\s+([^\s]+))?$/, (msg, match) => {
 bot.onText(/^\/waketime(@sticker_time_bot)?(\s+([^\s]+))?$/, (msg, match) => {
     const chatId = msg.chat.id;
     if (match[3]) {
-        var num = parseInt(match[3], 10);
+        const num = parseInt(match[3], 10);
         if (num <= 23 && num >= 0){
             data.waketime[chatId] = num;
-            var message = "Set waketime to " + num + ":00";
+            let message = "Set waketime to " + num + ":00";
             if (chatId in data.timelist) {
                 delete data.timelist[chatId];
                 message += ", list of hours has been deleted.";
@@ -239,7 +240,7 @@ bot.onText(/^\/addhour(@sticker_time_bot)?(\s+([^\s]+))?$/, (msg, match) => {
     const chatId = msg.chat.id;
     // bot.sendMessage(chatId, match[0]+'  '+match[1]+'  '+match[2]+'  '+match[3])
     if (match[3]) {
-        var num = parseInt(match[3], 10);
+        const num = parseInt(match[3], 10);
         if (num <= 23 && num >= 0){
             if (chatId in data.timelist) {
                 if (data.timelist[chatId].indexOf(num) > -1) {
@@ -250,7 +251,7 @@ bot.onText(/^\/addhour(@sticker_time_bot)?(\s+([^\s]+))?$/, (msg, match) => {
             } else {
                 data.timelist[chatId] = [num];
             }
-            var sleepDeleted = false;
+            let sleepDeleted = false;
             if (chatId in data.sleeptime) {
                 delete data.sleeptime[chatId];
                 sleepDeleted = true;
@@ -260,7 +261,7 @@ bot.onText(/^\/addhour(@sticker_time_bot)?(\s+([^\s]+))?$/, (msg, match) => {
                 sleepDeleted = true;
             }
             logger.info(chatId + ' added time '+ num +':00');
-            var message = 'Added time '+ num +':00';
+            let message = 'Added time '+ num +':00';
             if (sleepDeleted) {
                 message += ', sleep time and wake time deleted';
             }
@@ -278,13 +279,13 @@ bot.onText(/^\/delhour(@sticker_time_bot)?(\s+([^\s]+))?$/, (msg, match) => {
     const chatId = msg.chat.id;
     // bot.sendMessage(chatId, match[0]+'  '+match[1]+'  '+match[2]+'  '+match[3])
     if (match[3]) {
-        var num = parseInt(match[3], 10);
+        const num = parseInt(match[3], 10);
         if (num <= 23 && num >= 0){
             if (chatId in data.timelist) {
-                var index = data.timelist[chatId].indexOf(num);
+                const index = data.timelist[chatId].indexOf(num);
                 if (index > -1) {
                     data.timelist[chatId].splice(index, 1);
-                    var message = 'Deleted time '+ num +':00';
+                    let message = 'Deleted time '+ num +':00';
                     if (data.timelist[chatId].length == 0) {
                         delete data.timelist[chatId];
                         message += ', list of hours deleted';
@@ -307,9 +308,9 @@ bot.onText(/^\/delhour(@sticker_time_bot)?(\s+([^\s]+))?$/, (msg, match) => {
 bot.onText(/^\/listhours/, (msg, match) => {
     const chatId = msg.chat.id;
     if (chatId in data.timelist) {
-        var list = data.timelist[chatId];
-        var str = '';
-        for (var i = 0; i < list.length; i++) {
+        const list = data.timelist[chatId];
+        let str = '';
+        for (let i = 0; i < list.length; i++) {
             str += list[i] + ':00\n';
         }
         bot.sendMessage(chatId, 'List of hours:\n'+str);
@@ -363,9 +364,9 @@ const limiter = new Bottleneck({
     minTime: 33
 });
 
-var cron = new CronJob('0 * * * *', function() {
-    var date = new Date();
-    var chatsSent = 0;
+const cron = new CronJob('0 * * * *', function() {
+    const date = new Date();
+    let chatsSent = 0;
     data.chatids.forEach(function (id) {
         let tz = data.tzmap[id];
         if (!tz) {
